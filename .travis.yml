@@ -17,5 +17,18 @@ deploy:
     docker push lfrbessegato/docker-to-aws-with-dotnet;
   on:
     branch: main
+after_success:
+    - sudo apt-get -y install python3-pip python-dev
+    - sudo pip3 install -U setuptools
+    - sudo pip3 install -U virtualenvwrapper
+    - python3 -V
+    - pip3 -V
+    - pip3 uninstall wheel
+    - pip3 install wheel
+    - pip3 install awscli --upgrade --username
+    - export PATH=$PATH:$HOME/.local/bin
+    - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin 402437911183.dkr.ecr.sa-east-1.amazonaws.com
+    - docker tag docker-to-aws-with-dotnet:latest $IMAGE_REPO_URL:latest
+    - docker push $IMAGE_REPO_URL:latest
 notifications:
   email: false
